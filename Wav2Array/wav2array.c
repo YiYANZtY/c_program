@@ -13,10 +13,11 @@
 			        也就是22050Byte/s=11025*1*16/2。
 20H	    2byte	    块对齐=通道数*每次采样得到的样本位数/8，0002H，也就是2=1*16/8。
 22H	    2byte	    样本数据位数，0010H即16，一个量化样本占2byte。
-24H	    4byte	    data，一个标志而已。
-28H	    4byte	    Wav文件实际音频数据所占的大小，这里是001437C8H即1325000，再加上2CH就正好
+24H		2byte		附件数据，不一定存在。
+26H	    4byte	    data，一个标志而已。
+2AH	    4byte	    Wav文件实际音频数据所占的大小，这里是001437C8H即1325000，再加上2CH就正好
                     是1325044，整个文件的大小。
-2CH	    不定	    量化数据
+2EH	    不定	    量化数据
 ===================================================
 PCM编码格式问题请参考
 https://www.amobbs.com/thread-5652973-1-1.html?_dsign=8977581b
@@ -24,54 +25,64 @@ http://www.cnblogs.com/lidabo/p/3729615.html
 *******************************************************************************/ 
 #include <stdio.h>
 #include <stdlib.h>
- 
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned long
- 
- 
+
+/**定义数据类型*/
+#define u8	unsigned char
+#define u16	unsigned short
+#define u32	unsigned long
+
+/**选择音频采样深度*/
 #define FILE_SCALE	 16	//音频文件质量 8或16	 
  
-//46字节 
+//WAV文件头格式，46字节。
+#pragma pack(1)
 typedef struct {
-	u8 riff_mark[4];
-	u32 file_size;
-	u8	wave_str[4];
-	u8	fmt_str[4];
-	u32 pcm_bit_num;
-	u16 pcm_encode;
-	u16 sound_channel;
-	u32 pcm_sample_freq;
-	u32 byte_freq;
-	u16 block_alin;
-	u16 sample_bits;
-	u16 reserved;
-	u8	data_str[4]; 
-	u32 sound_size;
+	u8	riff_mark[4];		//0x00
+	u32	file_size;			//0x04
+	u8	wave_str[4];		//0x08
+	u8	fmt_str[4];			//0x0C
+	u32	pcm_bit_num;		//0x10
+	u16	pcm_encode;			//0x14
+	u16	sound_channel;		//0x16
+	u32	pcm_sample_freq;	//0x18
+	u32	byte_freq;			//0x1C
+	u16	block_alin;			//0x20
+	u16	sample_bits;		//0x22
+	u16	reserved;			//0x24	是否存在附加信息
+	u8	data_str[4];		//0x26
+	u32	sound_size;			//0x2A - 0x2E
 } WAV_Typedef;
- 
+
+#pragma pack()
+
+/**WAV文件头信息提取数组*/ 
 WAV_Typedef WAVFile_Array;
- 
+
+/**申请内存空间指针*/
 u16 *Sound_Data; 
- 
 u8 *Read_Sound_Data;
- 
- 
  
 int main()
 {
 	FILE *fp,*fw;
-	int ret;
 	int i;
+	int line_count=0;
 	
-	if((fp=fopen("test.wav","rb"))==NULL)	//打开操作不成功
+	if((fp=fopen("test.wav","rb"))==NULL) {
 		return 1;
-	if((fw=fopen("wav_out.h","w"))==NULL)	//打开操作不成功
-		return 1;			
-		
-	if(fread(&WAVFile_Array,sizeof(WAVFile_Array),1,fp)==1)
-		printf("wav file read ok!\n");
+	}	//打开操作不成功
 
+	if((fw=fopen("wav_out.h","w"))==NULL) {
+		return 1;
+	}	//打开操作不成功
+	
+	/**读取文件头信息*/
+	i = sizeof(WAVFile_Array);
+	if(fread(&WAVFile_Array,48,1,fp)==1) {
+		printf("wav file read ok!\n");
+	}
+
+	/**打印文件头信息*/
 	printf("资源交换文件标志: %.4s\n",WAVFile_Array.riff_mark);
 	printf("文件大小: %d\n",WAVFile_Array.file_size+8);
 	printf("文件格式: %.4s\n",WAVFile_Array.wave_str);
@@ -83,72 +94,57 @@ int main()
 	printf("块对齐: %d\n",WAVFile_Array.block_alin);
 	printf("采样位宽: %d\n",WAVFile_Array.sample_bits);	
 	printf("Data标志: %.4s\n",WAVFile_Array.data_str);
-
-	WAVFile_Array.sound_size = 0x20f800;	
 	printf("SoundSize: %d\n",WAVFile_Array.sound_size);
-			
+
+	/**申请内存空间存放音频信息*/			
 	Sound_Data=malloc(WAVFile_Array.sound_size);
 	Read_Sound_Data=(u8 *)Sound_Data;
  
+	/**申请内存失败*/
 	if(Sound_Data==NULL)
 	{
 		printf("malloc failed!\n");	
 		return 2;
 	}
 	
-	// fseek(fp,sizeof(WAV_Typedef),SEEK_SET);
-	fseek(fp,0,SEEK_SET);
-#if 0	
-	if((ret=fread(Sound_Data,WAVFile_Array.sound_size/2,2,fp))==1)
-		printf("sound data read ok!\n");
-	else
-	{
-		printf("sound data read failed! ret=%d\n",ret);	
-		return 3;
-	}
-#else
-	for(i=0;i<WAVFile_Array.sound_size;i++)
+	/**偏移文件指针位置，跳过文件头信息部分，将指针指向Data部分。*/
+	fseek(fp,sizeof(WAV_Typedef),SEEK_SET);
+
+	/**将Data信息读取到Read_Sound_Data数组中*/
+	for(i=0;i<WAVFile_Array.sound_size;i++) {
 		Read_Sound_Data[i]=fgetc(fp);
-#endif	
-	
-	{
-		int idx=0;
-		int line_count=0;
-		
-		fprintf(fw,"#ifndef __SOUND_DATA_H__\n");
-		fprintf(fw,"#define __SOUND_DATA_H__\n\n");
-		
-		fprintf(fw,"#define SOUND_LENGTH\t%d\n\n",WAVFile_Array.sound_size/2);
-#if FILE_SCALE==16		
-		fprintf(fw,"const unsigned short SOUND_DATA[SOUND_LENGTH] = {\n\t");
-#else
-		fprintf(fw,"const unsigned char SOUND_DATA[SOUND_LENGTH] = {\n\t");
-#endif		
-		
-		for(i=0;i<WAVFile_Array.sound_size/2;i++)
-		{
-			//printf("0x%04x,",Sound_Data[idx]);
-			//if() 
-#if FILE_SCALE==16 			
-			fprintf(fw,"0x%04x, ",(Sound_Data[idx])&0xffff);
-#else
-			fprintf(fw,"0x%02x, ",((Sound_Data[idx])&0xffff)>>8);
-#endif 
-			idx++;
-			line_count++;
-			if(line_count>8-1)
-			{
-				line_count=0;
-				//printf("\n");
-				fprintf(fw,"\n\t");
-			}
-		}
-		fprintf(fw,"\n};\n#endif\n");
-		
-		printf("\n ***** 已转换成头文件 wav_out.h *****\n"); 
 	}
 	
+	/**打印输出头文件*/
+	fprintf(fw,"#ifndef __SOUND_DATA_H__\n");
+	fprintf(fw,"#define __SOUND_DATA_H__\n\n");
+	fprintf(fw,"#define SOUND_LENGTH\t%d\n\n",WAVFile_Array.sound_size);
+#if FILE_SCALE==16		
+	fprintf(fw,"const unsigned short SOUND_DATA[SOUND_LENGTH] = {\n\t");
+#else
+	fprintf(fw,"const unsigned char SOUND_DATA[SOUND_LENGTH] = {\n\t");
+#endif		
 	
+	/**以8个数据为一行对齐输出Data*/
+	for(i=0;i<WAVFile_Array.sound_size;i++)
+	{
+#if FILE_SCALE==16 			
+		fprintf(fw,"0x%04x, ",(Sound_Data[i])&0xffff);
+#else	/**8位采样深度*/
+		fprintf(fw,"0x%02x, ",((Sound_Data[i])&0xffff)>>8);
+#endif
+		/**记录每行数据个数，不应大于8个*/
+		line_count++;
+		if(line_count>8-1)
+		{
+			line_count=0;
+			fprintf(fw,"\n\t");
+		}
+	}
+	fprintf(fw,"\n};\n#endif\n");	
+	printf("\n ***** 已转换成头文件 wav_out.h *****\n"); 
+	
+	/**Close the input file "fp" and output file "fw"*/
 	if(fp!=NULL)
 		fclose(fp);	
 	if(fw!=NULL)
