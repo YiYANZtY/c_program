@@ -102,8 +102,7 @@ int main()
 	Read_Sound_Data=(u8 *)Sound_Data;
  
 	/**申请内存失败*/
-	if(Sound_Data==NULL)
-	{
+	if (Sound_Data==NULL) {
 		printf("malloc failed!\n");	
 		return 2;
 	}
@@ -127,8 +126,7 @@ int main()
 #endif		
 	
 	/**以8个数据为一行对齐输出Data*/
-	for(i=0;i<WAVFile_Array.sound_size;i++)
-	{
+	for (i=0;i<WAVFile_Array.sound_size;i++) {
 #if FILE_SCALE==16 			
 		fprintf(fw,"0x%04x, ",(Sound_Data[i])&0xffff);
 #else	/**8位采样深度*/
@@ -136,8 +134,7 @@ int main()
 #endif
 		/**记录每行数据个数，不应大于8个*/
 		line_count++;
-		if(line_count>8-1)
-		{
+		if (line_count>8-1) {
 			line_count=0;
 			fprintf(fw,"\n\t");
 		}
