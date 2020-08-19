@@ -34,7 +34,7 @@ http://www.cnblogs.com/lidabo/p/3729615.html
 /**选择音频采样深度*/
 #define FILE_SCALE	 16	//音频文件质量 8或16	 
  
-//WAV文件头格式，46字节。
+//WAV文件头格式。设置对齐方式为字节对齐。结构体共用46字节。
 #pragma pack(1)
 typedef struct {
 	u8	riff_mark[4];		//0x00
@@ -53,6 +53,7 @@ typedef struct {
 	u32	sound_size;			//0x2A - 0x2E
 } WAV_Typedef;
 
+/**对齐方式为默认*/
 #pragma pack()
 
 /**WAV文件头信息提取数组*/ 
