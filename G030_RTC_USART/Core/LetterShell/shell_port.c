@@ -14,7 +14,7 @@ char shell_buffer[512];
 
 
 /* 2. 自己实现shell写函数 */
-#if 1
+#if 0
 /**
  * @brief shell读取数据函数原型
  *
@@ -25,7 +25,7 @@ char shell_buffer[512];
  */
 signed short UserShellRead(char *data, unsigned short len)
 {
-  if (HAL_UART_Receive(&huart1, (uint8_t *)data, len, 200) == HAL_OK)
+  if (HAL_UART_Receive(&huart2, (uint8_t *)data, len, 200) == HAL_OK)
   {
     return len;
   }
@@ -42,7 +42,7 @@ signed short UserShellRead(char *data, unsigned short len)
  */
 signed short UserShellWrite(char *data, unsigned short len)
 {
-  if (HAL_UART_Transmit(&huart1, (uint8_t *)data, len, 200) == HAL_OK)
+  if (HAL_UART_Transmit(&huart2, (uint8_t *)data, len, 200) == HAL_OK)
   {
     return len;
   }
@@ -50,12 +50,23 @@ signed short UserShellWrite(char *data, unsigned short len)
 }
 
 #else
-//shell写函数原型：typedef void (*shellWrite)(const char);
-void UserShellWrite(const char ch)
+/**
+ * @brief shell写数据函数原型
+ *
+ * @param data 需写的字符数据
+ * @param len 需要写入的字符数
+ *
+ * @return unsigned short 实际写入的字符数量
+ */
+signed short UserShellWrite(char *data, unsigned short len)
 {
-  //调用STM32 HAL库 API 使用查询方式发送
-  HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, 0xFFFF);
+  if (HAL_UART_Transmit(&huart2, (uint8_t *)data, len, 200) == HAL_OK)
+  {
+    return len;
+  }
+  return 0;
 }
+
 #endif
 
 /* 3. 编写初始化函数 */
@@ -63,7 +74,7 @@ void User_Shell_Init(void)
 {
   //注册自己实现的写函数
   shell.write = UserShellWrite;
-  shell.read = UserShellRead;
+//  shell.read = UserShellRead;
 
   //调用shell初始化函数
     shellInit(&shell, shell_buffer, 512);
