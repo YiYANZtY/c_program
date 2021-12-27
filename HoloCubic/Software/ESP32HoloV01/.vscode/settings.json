@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "system_error": "cpp",
+        "holoconwifi.h": "c",
+        "holodbg.h": "c",
+        "sstream": "cpp",
+        "array": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp"
+    }
+}
