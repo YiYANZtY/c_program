@@ -1,16 +1,18 @@
 /*
  * @Author: your name
  * @Date: 2021-12-24 15:37:41
- * @LastEditTime: 2021-12-27 11:21:20
+ * @LastEditTime: 2022-01-21 17:08:44
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\HoloConWifi.c
  */
 
-#include "HoloConWifi.h"
+#include "HoloCfg.h"
+#include "WiFi.h"
+#include "HoloDbg.h"
 
-const char *ssid = "Guests";    //wifi账号
-const char *passWord = "tailin2019";    //wifi密码
+const char *ssid = "CMCC-7132";    //wifi账号
+const char *passWord = "A71327132";    //wifi密码
 
 /*******************************************************************************
  * 函数名称：HoloConnectWifi
@@ -22,11 +24,16 @@ const char *passWord = "tailin2019";    //wifi密码
 *******************************************************************************/
 void HoloConnectWifi(void) //连接wifi
 {
+    int i = 0;
+
     WiFi.begin(ssid, passWord);
-    while (WL_CONNECTED != WiFi.status())
+
+    //尝试10秒没有连上wifi自动跳过
+    while ( (WL_CONNECTED != WiFi.status()) && (20 > i))
     {
         delay(500); //500ms
         DebugPrint(".");
+        i++;
     }
     
     DebugPrintln("");

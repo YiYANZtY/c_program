@@ -6,6 +6,20 @@
         "sstream": "cpp",
         "array": "cpp",
         "initializer_list": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "holocfg.h": "c",
+        "hologetntp.h": "c",
+        "hologetweather.h": "c",
+        "stdint.h": "c",
+        "arduino.h": "c",
+        "string.h": "c",
+        "holodisplay.h": "c",
+        "as.h": "c",
+        "wstring.h": "c",
+        "holobatman.h": "c",
+        "main.h": "c",
+        "queue.h": "c",
+        "freertos.h": "c",
+        "string": "c"
     }
 }

@@ -1,12 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-12-27 13:19:28
- * @LastEditTime: 2021-12-27 17:07:14
+ * @LastEditTime: 2022-01-14 14:30:34
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\HoloGetWeather.cpp
  */
-#include "HoloGetWeather.h"
+#include "HoloCfg.h"
+#include "HTTPClient.h"
+#include "ArduinoJson.h"
 
 const int httpPort = 80;
 const char* host = "api.seniverse.com";  //心知天气服务器地址
@@ -111,9 +113,10 @@ void HoloAnaWehtrJson(String *pStr, zxtqWethr_t *pZxtqWethr, int size)
 
         pZxtqWethr[zxtqWethrIndex].date = results_0_daily_item_date;
         pZxtqWethr[zxtqWethrIndex].text_day = results_0_daily_item_text_day;
-        pZxtqWethr[zxtqWethrIndex].code_day = results_0_daily_item_code_day;
+        // pZxtqWethr[zxtqWethrIndex].code_day = results_0_daily_item_code_day;
+        pZxtqWethr[zxtqWethrIndex].code_day = atoi(results_0_daily_item_code_day);
         pZxtqWethr[zxtqWethrIndex].text_night = results_0_daily_item_text_night;
-        pZxtqWethr[zxtqWethrIndex].code_night = results_0_daily_item_code_night;
+        pZxtqWethr[zxtqWethrIndex].code_night = atoi(results_0_daily_item_code_night);
         pZxtqWethr[zxtqWethrIndex].high = results_0_daily_item_high;
         pZxtqWethr[zxtqWethrIndex].low = results_0_daily_item_low;
         pZxtqWethr[zxtqWethrIndex].rainfall = results_0_daily_item_rainfall;
@@ -128,6 +131,23 @@ void HoloAnaWehtrJson(String *pStr, zxtqWethr_t *pZxtqWethr, int size)
 
     for (zxtqWethrIndex = 0; zxtqWethrIndex < size; zxtqWethrIndex++)
     {
+        // String message =    
+        //     pZxtqWethr[zxtqWethrIndex].date                     + " " +
+        //     pZxtqWethr[zxtqWethrIndex].text_day                 + " " +
+        //     pZxtqWethr[zxtqWethrIndex].code_day                 + " " +
+        //     pZxtqWethr[zxtqWethrIndex].text_night               + " " +
+        //     pZxtqWethr[zxtqWethrIndex].code_night               + " " +
+        //     pZxtqWethr[zxtqWethrIndex].high                     + " " +
+        //     pZxtqWethr[zxtqWethrIndex].low                      + " " +
+        //     pZxtqWethr[zxtqWethrIndex].rainfall                 + " " +
+        //     pZxtqWethr[zxtqWethrIndex].precip                   + " " +
+        //     pZxtqWethr[zxtqWethrIndex].wind_direction           + " " +
+        //     pZxtqWethr[zxtqWethrIndex].wind_direction_degree    + " " +
+        //     pZxtqWethr[zxtqWethrIndex].wind_speed               + " " +
+        //     pZxtqWethr[zxtqWethrIndex].wind_scale               + " " +
+        //     pZxtqWethr[zxtqWethrIndex].humidity;
+        // DebugPrintln(message);
+
         DebugPrint(pZxtqWethr[zxtqWethrIndex].date);
         DebugPrint(pZxtqWethr[zxtqWethrIndex].text_day);
         DebugPrint(pZxtqWethr[zxtqWethrIndex].code_day);
