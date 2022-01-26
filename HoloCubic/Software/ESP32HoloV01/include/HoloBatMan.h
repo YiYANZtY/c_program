@@ -40,6 +40,7 @@ typedef struct _batState_t
 
 void HoloBatInit(void);//初始化充电标志位IO和电压ADC_IO
 void HoloGetBatState(batState_t *batState);//获取电池状态
+int HoloSearchMid(uint16_t data[], int size);
 
 #ifdef __cplusplus
 }

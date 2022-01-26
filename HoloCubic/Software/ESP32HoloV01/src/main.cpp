@@ -1,14 +1,13 @@
 /*
  * @Author: your name
  * @Date: 2021-12-24 15:17:34
- * @LastEditTime: 2022-01-24 15:54:55
+ * @LastEditTime: 2022-01-26 17:20:06
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\main.cpp
  */
 #include "HoloCfg.h"
 #include "TFT_eSPI.h"
-#include "As.h"
 
 struct tm ntpTim;
 const int DAYNUMBER = 3;
@@ -44,6 +43,7 @@ void setup()
   HoloConNtp(8 * 60 * 60);  //连接NTP服务器,第八时区
   HoloGetNtp(&ntpTim);      //获取最新的时间
   HoloBatInit();            ////初始化充电标志位IO和电压ADC_IO
+  HoloFillScreen(TFT_BLACK);
 
   //创建显示消息队列
   appServer.xDispMsgQueue = xQueueCreate(10, sizeof(displayMessage_t));
@@ -59,7 +59,7 @@ void setup()
                   "vTaskGetNtp",          /* Text name for the task. */
                   1024 * 4,               /* Stack size in words, not bytes. */
                   NULL,                   /* Parameter passed into the task. */
-                  1,                      /* Priority at which the task is created. */
+                  4,                      /* Priority at which the task is created. */
                   &xGetNtpHandle );       /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -72,7 +72,7 @@ void setup()
                   "vTaskDisplay",         /* Text name for the task. */
                   1024 * 4,               /* Stack size in words, not bytes. */
                   NULL,                   /* Parameter passed into the task. */
-                  1,                      /* Priority at which the task is created. */
+                  5,                      /* Priority at which the task is created. */
                   &xDisplayHandle );      /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -85,7 +85,7 @@ void setup()
                   "vTaskTouchPad",        /* Text name for the task. */
                   1024 * 4,               /* Stack size in words, not bytes. */
                   NULL,                   /* Parameter passed into the task. */
-                  1,                      /* Priority at which the task is created. */
+                  6,                      /* Priority at which the task is created. */
                   &xTouchPadHandle );     /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -98,7 +98,7 @@ void setup()
                   "vTaskGetWeather",        /* Text name for the task. */
                   1024 * 4,                 /* Stack size in words, not bytes. */
                   NULL,                     /* Parameter passed into the task. */
-                  1,                        /* Priority at which the task is created. */
+                  4,                        /* Priority at which the task is created. */
                   &xGetWeatherHandle );     /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -111,7 +111,7 @@ void setup()
                   "vTaskBatMan",            /* Text name for the task. */
                   1024 * 4,                 /* Stack size in words, not bytes. */
                   NULL,                     /* Parameter passed into the task. */
-                  1,                        /* Priority at which the task is created. */
+                  6,                        /* Priority at which the task is created. */
                   &xBatManHandle );         /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -123,7 +123,7 @@ void loop()
 {
   // put your main code here, to run repeatedly:
   
-  delay(10);
+  delay(50);
 }  
 
 //调试函数
@@ -135,6 +135,7 @@ void loop()
 // HoloShowTime(TFT_WHITE, TFT_BLACK, Astronaut, &ntpTim);
 // HoloShowWethr(zxtqWethr, DAYNUMBER);
 // HoloGetBatState(&batState);
+  // HoloShowGif(Hammer, 18);
 
 //ADC函数
 // analogRead(uint8_t pin);
@@ -230,11 +231,30 @@ void vTaskTouchPad( void * pvParameters )
   uint8_t keyLock = 0, keyTimeCnt = 0, shortTouchFlg = 0;
   BaseType_t xStatus;
   displayMessage_t dispMsg = SHOW_TIME;
+  // uint16_t touchPadVal = 0;
+  const int filSize = 10;
+  uint16_t touchPadVal[filSize] = {0};
+  int tmpMidVal = 0;
 
   for( ;; )
   {
     /* Task code goes here. */
-    if (touchRead(T0) > 70)//没有按键按下
+    for(int i = 0; i < filSize; i++)
+    {
+      touchPadVal[i] = touchRead(T0);
+      delay(20);
+#if HOLOTOUCHPADBUG
+      DebugPrintln(touchPadVal[i]);
+#endif
+    }
+    
+    tmpMidVal = HoloSearchMid(touchPadVal, filSize);
+#if HOLOTOUCHPADBUG
+      DebugPrint("Touch pad 中间值：");
+      DebugPrintln(touchPadVal[tmpMidVal]);
+#endif
+
+    if (touchPadVal[tmpMidVal] > 82)//没有按键按下
     {
       keyLock = 0;
       keyTimeCnt = 0;
@@ -245,8 +265,16 @@ void vTaskTouchPad( void * pvParameters )
         //下面代码执行短按情况
         DebugPrintln("Touch pad 短按");
 
-        //发送SHOW_TIME给display任务显示时间
-        dispMsg = SHOW_TIME;
+        //发送任务给display任务显示时间
+        if(SHOW_TIME == dispMsg)
+        {
+          dispMsg = SHOW_WEATHER;
+        }
+        else
+        {
+          dispMsg = SHOW_TIME;
+        }
+
         xStatus = xQueueSend(appServer.xDispMsgQueue, &dispMsg, 0);
         if(pdTRUE != xStatus)
         {
@@ -261,7 +289,7 @@ void vTaskTouchPad( void * pvParameters )
       {
         shortTouchFlg = 1;//激活按键短按的有效标志
       }
-      if(keyTimeCnt > 15)
+      if(keyTimeCnt > 40)
       {
         shortTouchFlg = 0;//清除按键短按的有效标志
         keyTimeCnt = 0;
@@ -270,17 +298,10 @@ void vTaskTouchPad( void * pvParameters )
         //下面代码执行长按情况
         DebugPrintln("Touch pad 长按");
 
-        //发送SHOW_WEATHER给display任务显示天气
-        dispMsg = SHOW_WEATHER;
-        xStatus = xQueueSend(appServer.xDispMsgQueue, &dispMsg, 0);
-        if(pdTRUE != xStatus)
-        {
-          DebugPrintln("Touch pad 长按信息发送失败");
-        }
+        //重启系统
+        ESP.restart();
       }
     }
-
-    delay(100);
   }
 }
 
@@ -300,9 +321,11 @@ void vTaskGetWeather( void * pvParameters )
 /* vTaskBatMan to be created. */
 void vTaskBatMan( void * pvParameters )
 {
-  static float batThreshold = 4.13;
+  static float batThreshold = 3.7;
   BaseType_t xStatus;
   displayMessage_t dispMsg = SHOW_TIME;
+
+  batState.prvBatChargeFlag = BAT_CHARGE;
 
   for( ;; )
   {
@@ -341,7 +364,7 @@ void vTaskBatMan( void * pvParameters )
     //电池缺电，会一直进入
     if((BAT_CHARGE != batState.batChargeFlag) && (batThreshold > batState.batPower))
     {
-        batThreshold = 4.16;
+        batThreshold = 3.7 + 0.5;
 
         //发送SHOW_BATLOWPOW给display任务提示开始充电
         dispMsg = SHOW_BATLOWPOW;
@@ -355,7 +378,7 @@ void vTaskBatMan( void * pvParameters )
     }
     else//低电压迟滞比较，避免电压在阈值附近波动。
     {
-        batThreshold = 4.16;
+        batThreshold = 3.7;
     }
 
     delay(1000);

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-28 09:39:33
- * @LastEditTime: 2022-01-21 17:04:10
+ * @LastEditTime: 2022-01-26 15:02:46
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\HoloDisplay.cpp
@@ -33,6 +33,9 @@ void HoloDispInit(void)
   tft.setTextSize(1);
   // tft.setRotation(4);//屏幕内容镜像显示或者旋转屏幕0-4  ST7735_Rotation中设置
   tft.setSwapBytes(true);             //使图片颜色由RGB->BGR
+
+  tft.setRotation(4); //设置显示镜像 + 旋转90°
+
   //清除屏幕，显示黑色
   tft.fillScreen(TFT_BLACK);
 }
@@ -207,7 +210,7 @@ void HoloShowTime(uint16_t fg, uint16_t bg, const uint16_t **pGif, \
   wDay.toCharArray(cWeekDays, wDay.length() + 1);
 
   //显示Gif图
-  tft.pushImage(0, 64, 64, 64, pGif[i]);
+  tft.pushImage(-3, 64, 64, 64, pGif[i]);
   i += 1;
   if(i>8)
   {
@@ -215,14 +218,15 @@ void HoloShowTime(uint16_t fg, uint16_t bg, const uint16_t **pGif, \
   }
 
   //显示水平线
-  tft.drawFastHLine(10, 53, 108, tft.alphaBlend(0, bg,  fg));
-  HoloShowText(15, 5, 2, 3, fg, bg, hour + ":" + minute);
-  HoloShowText(65, 60, 1, 2, fg, bg, month + "/" + mDay);
-  HoloShowText(65, 80, 1, 1, fg, bg, year);
-  HoloShowText(100, 80, 1, 2, fg, bg, second);
+  tft.drawFastHLine(10, 53, 108, TFT_WHITE);
+  HoloShowText(7,       5,  6, 1, fg, bg, hour);
+  HoloShowText(7 + 55,  5,  6, 1, TFT_ORANGE, bg, minute);
+  HoloShowText(62,      65 + 0, 1, 2, fg, bg, month + "/" + mDay);
+  HoloShowText(62,      65 + 20, 1, 1, fg, bg, year);
+  HoloShowText(62 + 35, 65 + 20, 1, 2, fg, bg, second);
   //清除显示，显示星期
   // tft.fillRect(65, 100, 16 * 2, 16, TFT_BLACK);
-  HoloShowFonts(65, 100, cWeekDays, TFT_SKYBLUE);
+  HoloShowFonts(78, 103, cWeekDays, TFT_VIOLET);
 }
 
 /*******************************************************************************
@@ -236,22 +240,36 @@ void HoloShowTime(uint16_t fg, uint16_t bg, const uint16_t **pGif, \
 *******************************************************************************/
 void HoloShowWethr(const zxtqWethr_t *zxtqWethr, int dayNumb)
 {
-  const int leftBlank = 6;
-  const int topBlank = 27;
+  const int leftBlank = 3;
+  const int topBlank = 24;
   const int picInterval = 43;
 
+  int humidity = 0;//降水概率
+  const int humLen = 45;//表示降水概率的像素长度
+
   //显示地址
-  HoloShowFonts(1, 1, "杭州", TFT_WHITE);
+  HoloShowFonts(5, 0, "杭州", TFT_SILVER);
+
+  //显示湿度
+  humidity = zxtqWethr[0].humidity.toInt();
+  tft.drawRoundRect(56, 15, humLen, 4, 2, TFT_WHITE);
+  tft.drawFastHLine(56 + 2, 15 + 1, (humLen - 4) * humidity / 100, TFT_SKYBLUE);
+  tft.drawFastHLine(56 + 2, 15 + 2, (humLen - 4) * humidity / 100, TFT_SKYBLUE);
+  HoloShowText(103, 12, 1, 1, TFT_WHITE, TFT_BLACK, zxtqWethr[0].humidity + "%");
 
   //显示分隔线
-  tft.drawFastVLine(leftBlank + picInterval * 1 - 7, topBlank + 6, 87, TFT_WHITE);
-  tft.drawFastVLine(leftBlank + picInterval * 2 - 7, topBlank + 6, 87, TFT_WHITE);
+  tft.drawFastVLine(leftBlank + picInterval * 1 - 7, topBlank + 6, 87, TFT_ORANGE);
+  tft.drawFastVLine(leftBlank + picInterval * 2 - 7, topBlank + 6, 87, TFT_ORANGE);
+  for(int j = 1; j <= 9; j++)
+  {
+    tft.drawFastHLine(0, topBlank + 12 + 2 + 30 + j, 128, TFT_ORANGE);
+  }
 
   for (int i = 0; i < dayNumb; i++)
   {
     //显示白天天气文字
     HoloShowFonts(leftBlank + picInterval * i + 2, topBlank, 
-      ppWetherText[zxtqWethr[i].code_day], TFT_SKYBLUE);
+      ppWetherText[zxtqWethr[i].code_day], TFT_WHITE);
 
     //显示白天天气图片
     tft.pushImage(leftBlank + picInterval * i, topBlank + 12 + 2, 
@@ -259,7 +277,7 @@ void HoloShowWethr(const zxtqWethr_t *zxtqWethr, int dayNumb)
 
     //显示温度
     HoloShowText(leftBlank + 3 + picInterval * i, topBlank + 12 + 2 + 30 + 2, 
-      1, 1, TFT_WHITE, TFT_BLACK, zxtqWethr[i].low + "~" + zxtqWethr[i].high);
+      1, 1, TFT_BLACK, TFT_ORANGE, (String) zxtqWethr[i].low + "~" + (String) zxtqWethr[i].high);
 
     //显示夜间天气图片
     tft.pushImage(leftBlank + picInterval * i, topBlank + 12 + 2 + 30 + 2 + 7 + 2,
@@ -267,7 +285,7 @@ void HoloShowWethr(const zxtqWethr_t *zxtqWethr, int dayNumb)
 
     //显示夜间天气文字
     HoloShowFonts(leftBlank + picInterval * i + 2, topBlank + 12 + 2 + 30 + 2 + 7 + 2 + 30 + 2,
-      ppWetherText[zxtqWethr[i].code_night], TFT_SKYBLUE);
+      ppWetherText[zxtqWethr[i].code_night], TFT_WHITE);
   }
 }
 
@@ -310,11 +328,13 @@ void HoloBatCharge(void)
       //最终计算结果不能超过绿色最大值，不然就显示黑色。
       if(color >= TFT_GREEN)
       {
-        tft.drawRect(0, 0, 128, 128, TFT_GREEN);
+        tft.drawRect(0, 0, 128-7, 128-7, TFT_GREEN);
+        tft.drawRect(1, 1, 126-7, 126-7, TFT_GREEN);
       }
       else
       {
-        tft.drawRect(0, 0, 128, 128, color);
+        tft.drawRect(0, 0, 128-7, 128-7, color);
+        tft.drawRect(1, 1, 126-7, 126-7, color);
       }
 
       delay(30);
@@ -357,5 +377,28 @@ void HoloBatLowPow(void)
     decColor -= 0x4;
   }  
 
-  tft.drawRect(0, 0, 128, 128, color);
+  tft.drawRect(0, 0, 128-7, 128-7, color);
+  tft.drawRect(1, 1, 126-7, 126-7, color);
+}
+
+/*******************************************************************************
+ * 函数名称：HoloShowGif
+ * 功能描述：显示Gif图片
+ * 输入参数：pGif:图片指针
+ *          size:有多少帧图片
+ * 输出参数：无
+ * 返回参数：无
+ * 其他说明：无
+*******************************************************************************/
+void HoloShowGif(const uint16_t **pGif, int size)
+{
+  static int i = 0;
+
+  //显示Gif图
+  tft.pushImage(0, 0, 128, 128, pGif[i]);
+  i += 1;
+  if(i > (size - 1))
+  {
+    i = 0;
+  }
 }

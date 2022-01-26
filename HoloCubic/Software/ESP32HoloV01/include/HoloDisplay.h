@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-28 09:39:46
- * @LastEditTime: 2022-01-21 15:40:35
+ * @LastEditTime: 2022-01-25 11:36:33
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\include\HoloDisplay.h
@@ -40,6 +40,7 @@ void HoloShowWethr(const zxtqWethr_t *zxtqWethr, int dayNumb);
 void HoloFillScreen(uint16_t bg);
 void HoloBatCharge(void);
 void HoloBatLowPow(void);
+void HoloShowGif(const uint16_t **pGif, int size);
         
 #ifdef __cplusplus
 }

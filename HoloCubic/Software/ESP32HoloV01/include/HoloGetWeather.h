@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-27 13:19:43
- * @LastEditTime: 2022-01-19 13:30:56
+ * @LastEditTime: 2022-01-25 16:08:38
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\include\HoloGetWeather.h
@@ -23,8 +23,8 @@ typedef struct _zxtqWethr_t
     int     code_day;                 //白天天气现象代码
     String  text_night;               //晚间天气现象文字
     int     code_night;               //晚间天气现象代码
-    String  high;                     //当天最高温度
-    String  low;                      //当天最低温度
+    int     high;                     //当天最高温度
+    int     low;                      //当天最低温度
     String  rainfall;                 //降水概率，范围0~100，单位百分比（目前仅支持国外城市）
     String  precip;                   //风向文字
     String  wind_direction;           //风向角度，范围0~360

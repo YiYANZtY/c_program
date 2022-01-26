@@ -60,3 +60,38 @@ void HoloGetBatState(batState_t *batState)
     HoloShowText(0, 10, 1, 1, 0xffff, 0x0000, (String) batState->batPower);
 #endif //HOLOBATDEBUG
 }
+
+// /*******************************************************************************
+//  * 函数名称：HoloSearchMid
+//  * 功能描述：获取数组中值的下标
+//  * 输入参数：data:需要滤波的数组
+//             size:数组长度
+//  * 输出参数：无
+//  * 返回参数：数组中值的下标
+//  * 其他说明：无
+// *******************************************************************************/
+int HoloSearchMid(uint16_t data[], int size)
+{
+    int i, j, flag;
+    uint16_t tmp;
+    for(i = size - 1; i >= 0; i--)
+    {
+        flag = 0;
+        for(j = 0; j < i; j++)
+        {
+            if(data[j] > data[j + 1])
+            {
+                tmp = data[j];
+                data[j] = data[j+1];
+                data[j + 1] = tmp;
+                flag++;
+            }
+        }
+        if(flag == 0)
+        break;
+    }
+    if(size % 2)
+        return size / 2 + 1;
+    else
+        return size / 2;
+}

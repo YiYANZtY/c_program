@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-27 13:19:28
- * @LastEditTime: 2022-01-14 14:30:34
+ * @LastEditTime: 2022-01-25 16:09:10
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\HoloGetWeather.cpp
@@ -117,8 +117,8 @@ void HoloAnaWehtrJson(String *pStr, zxtqWethr_t *pZxtqWethr, int size)
         pZxtqWethr[zxtqWethrIndex].code_day = atoi(results_0_daily_item_code_day);
         pZxtqWethr[zxtqWethrIndex].text_night = results_0_daily_item_text_night;
         pZxtqWethr[zxtqWethrIndex].code_night = atoi(results_0_daily_item_code_night);
-        pZxtqWethr[zxtqWethrIndex].high = results_0_daily_item_high;
-        pZxtqWethr[zxtqWethrIndex].low = results_0_daily_item_low;
+        pZxtqWethr[zxtqWethrIndex].high = atoi(results_0_daily_item_high);
+        pZxtqWethr[zxtqWethrIndex].low = atoi(results_0_daily_item_low);
         pZxtqWethr[zxtqWethrIndex].rainfall = results_0_daily_item_rainfall;
         pZxtqWethr[zxtqWethrIndex].precip = results_0_daily_item_precip;
         pZxtqWethr[zxtqWethrIndex].wind_direction = results_0_daily_item_wind_direction;

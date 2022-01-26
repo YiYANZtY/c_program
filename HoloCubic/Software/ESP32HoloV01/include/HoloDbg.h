@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-24 15:52:53
- * @LastEditTime: 2022-01-21 14:30:09
+ * @LastEditTime: 2022-01-25 16:17:11
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\include\HoloDbg.h
@@ -16,6 +16,7 @@ extern "C" {
 #define HOLODEBUG 1
 // #define HOLODISPDEBUG 1
 // #define HOLOBATDEBUG 1
+#define HOLOTOUCHPADBUG 1
 
 #ifdef HOLODEBUG
     #define DebugBegin(baud_rate)     Serial.begin(baud_rate)
