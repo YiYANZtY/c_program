@@ -20,6 +20,8 @@ void setup() {
   //Pin:T0(GPIO4)
   touchAttachInterrupt(T0, TouchEvent, 70);
 #endif
+  pinMode(GPIO_NUM_19, OUTPUT);
+  digitalWrite(GPIO_NUM_19, HIGH);
 }
 
 void loop() {
@@ -27,6 +29,8 @@ void loop() {
 #if 0 == TOUCHEVENT
   Serial.printf("touch:%d\r\n", touchRead(T0));
 #endif
+  // pinMode(GPIO_NUM_19, OUTPUT);
+  // digitalWrite(GPIO_NUM_19, HIGH);
 }
 
 void TouchEvent()

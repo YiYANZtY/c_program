@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-28 09:39:33
- * @LastEditTime: 2022-01-26 15:02:46
+ * @LastEditTime: 2022-01-28 18:36:18
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\HoloDisplay.cpp
@@ -27,10 +27,10 @@ String weekDays[] = {"周日", "周一", "周二", "周三", "周四", "周五",
 void HoloDispInit(void)
 {
   tft.init();                         //初始化显示寄存器
-  tft.fillScreen(TFT_WHITE);          //屏幕颜色
-  tft.setTextColor(TFT_BLACK);        //设置字体颜色黑色
-  tft.setCursor(15, 30, 1);           //设置文字开始坐标(15,30)及1号字体
-  tft.setTextSize(1);
+  // tft.fillScreen(TFT_WHITE);          //屏幕颜色
+  // tft.setTextColor(TFT_BLACK);        //设置字体颜色黑色
+  // tft.setCursor(15, 30, 1);           //设置文字开始坐标(15,30)及1号字体
+  // tft.setTextSize(1);
   // tft.setRotation(4);//屏幕内容镜像显示或者旋转屏幕0-4  ST7735_Rotation中设置
   tft.setSwapBytes(true);             //使图片颜色由RGB->BGR
 

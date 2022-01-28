@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-24 15:17:34
- * @LastEditTime: 2022-01-26 17:20:06
+ * @LastEditTime: 2022-01-28 18:55:46
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ESP32HoloV01\src\main.cpp
@@ -45,6 +45,10 @@ void setup()
   HoloBatInit();            ////初始化充电标志位IO和电压ADC_IO
   HoloFillScreen(TFT_BLACK);
 
+  //初始化显示屏背景光
+  pinMode(GPIO_NUM_19, OUTPUT);
+  digitalWrite(GPIO_NUM_19, HIGH);
+
   //创建显示消息队列
   appServer.xDispMsgQueue = xQueueCreate(10, sizeof(displayMessage_t));
   if( appServer.xDispMsgQueue == NULL )
@@ -72,7 +76,7 @@ void setup()
                   "vTaskDisplay",         /* Text name for the task. */
                   1024 * 4,               /* Stack size in words, not bytes. */
                   NULL,                   /* Parameter passed into the task. */
-                  5,                      /* Priority at which the task is created. */
+                  7,                      /* Priority at which the task is created. */
                   &xDisplayHandle );      /* Used to pass out the created task's handle. */
   if( xReturned != pdPASS )
   {
@@ -140,6 +144,12 @@ void loop()
 //ADC函数
 // analogRead(uint8_t pin);
 // adc2_config_channel_atten();
+
+//touch pad中断服务函数
+void TouchEvent()
+{
+  DebugPrintln("Touch Event.");
+}
 
 /* vTaskGetNtp to be created. */
 void vTaskGetNtp( void * pvParameters )
@@ -289,7 +299,7 @@ void vTaskTouchPad( void * pvParameters )
       {
         shortTouchFlg = 1;//激活按键短按的有效标志
       }
-      if(keyTimeCnt > 40)
+      if(keyTimeCnt > 30)
       {
         shortTouchFlg = 0;//清除按键短按的有效标志
         keyTimeCnt = 0;
@@ -298,8 +308,19 @@ void vTaskTouchPad( void * pvParameters )
         //下面代码执行长按情况
         DebugPrintln("Touch pad 长按");
 
-        //重启系统
-        ESP.restart();
+        //关闭显示器
+        digitalWrite(GPIO_NUM_19, LOW);
+        gpio_deep_sleep_hold_en();
+        DebugPrintln("延时秒进入低功耗");
+        delay(5000);
+
+        // //重启系统
+        // ESP.restart();
+
+        //进入低功耗模式
+        touchAttachInterrupt(T0, TouchEvent, 90);
+        esp_sleep_enable_touchpad_wakeup();
+        esp_deep_sleep_start();
       }
     }
   }

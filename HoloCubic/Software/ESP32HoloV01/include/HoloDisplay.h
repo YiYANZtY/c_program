@@ -12,6 +12,7 @@
 #include "HoloGetWeather.h"
 #include "stdint.h"
 #include "WString.h"
+#include "TFT_eSPI.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -28,6 +29,8 @@ typedef enum _displayMessage_t
     SHOW_BATLOWPOW,
     DIP_MSG_MAX,
 }displayMessage_t;
+
+extern TFT_eSPI tft;
 
 void HoloDispInit(void);
 void HoloShowFont(int32_t x, int32_t y, const char c[3], uint32_t color, uint8_t hanZiWidth);

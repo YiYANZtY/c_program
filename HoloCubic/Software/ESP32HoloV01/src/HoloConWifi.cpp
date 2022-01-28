@@ -11,11 +11,11 @@
 #include "WiFi.h"
 #include "HoloDbg.h"
 
-char ssid1[] = " ";          //wifi账号
-char passWord1[] = " ";      //wifi密码
+char ssid1[] = "YASHA-AD";          //wifi账号
+char passWord1[] = "";      //wifi密码
 
-char ssid2[] = " ";          //wifi账号
-char passWord2[] = " ";      //wifi密码
+char ssid2[] = "TP-LINK_4684";          //wifi账号
+char passWord2[] = "bnm12345678";      //wifi密码
 
 char ssid3[] = "CMCC-7132";          //wifi账号
 char passWord3[] = "A71327132";      //wifi密码

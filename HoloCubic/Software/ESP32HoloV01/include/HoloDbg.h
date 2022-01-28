@@ -16,7 +16,7 @@ extern "C" {
 #define HOLODEBUG 1
 // #define HOLODISPDEBUG 1
 // #define HOLOBATDEBUG 1
-#define HOLOTOUCHPADBUG 1
+// #define HOLOTOUCHPADBUG 1
 
 #ifdef HOLODEBUG
     #define DebugBegin(baud_rate)     Serial.begin(baud_rate)
