@@ -10,11 +10,11 @@
 
 /* 1. 创建shell对象，开辟shell缓冲区 */
 Shell shell;
-char shell_buffer[512];
+char shell_buffer[125];
 
 
 /* 2. 自己实现shell写函数 */
-#if 0
+#if 1
 /**
  * @brief shell读取数据函数原型
  *
@@ -73,8 +73,8 @@ void User_Shell_Init(void)
 {
   //注册自己实现的写函数
   shell.write = UserShellWrite;
-//  shell.read = UserShellRead;
+  shell.read = UserShellRead;
 
   //调用shell初始化函数
-    shellInit(&shell, shell_buffer, 512);
+    shellInit(&shell, shell_buffer, 125);
 }

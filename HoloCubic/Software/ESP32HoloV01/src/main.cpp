@@ -264,7 +264,7 @@ void vTaskTouchPad( void * pvParameters )
       DebugPrintln(touchPadVal[tmpMidVal]);
 #endif
 
-    if (touchPadVal[tmpMidVal] > 82)//没有按键按下
+    if (touchPadVal[tmpMidVal] > 75)//没有按键按下
     {
       keyLock = 0;
       keyTimeCnt = 0;
@@ -318,7 +318,7 @@ void vTaskTouchPad( void * pvParameters )
         // ESP.restart();
 
         //进入低功耗模式
-        touchAttachInterrupt(T0, TouchEvent, 90);
+        touchAttachInterrupt(T0, TouchEvent, 80);
         esp_sleep_enable_touchpad_wakeup();
         esp_deep_sleep_start();
       }

@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -128,11 +128,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (USART2 == huart->Instance)
-  {
-    HAL_UART_Receive_IT(&huart2, uartRxData, sizeof(uartRxData));
-    shellHandler(&shell, uartRxData[0]);
-  }
+//  if (USART2 == huart->Instance)
+//  {
+//	shellHandler(&shell, uartRxData[0]);
+//	HAL_UART_Receive_IT(&huart2, uartRxData, sizeof(uartRxData));
+//  }
 }
 /* USER CODE END 1 */
 

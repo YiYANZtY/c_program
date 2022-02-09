@@ -1,6 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,configTOTAL_HEAP_SIZE
+FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,configTOTAL_HEAP_SIZE,configTIMER_TASK_STACK_DEPTH
 FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.configTIMER_TASK_STACK_DEPTH=128
 FREERTOS.configTOTAL_HEAP_SIZE=1024
 FREERTOS.configUSE_NEWLIB_REENTRANT=1
 File.Version=6

@@ -8,7 +8,7 @@
 #ifndef INC_UART_DEBUG_H_
 #define INC_UART_DEBUG_H_
 
-#include "main.h"
+#include "stm32g0xx_hal.h"
 
 
 void UART_Debug_Printf(const char* format, ...);

@@ -116,7 +116,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart2, uartRxData, sizeof(uartRxData));
+//  HAL_UART_Receive_IT(&huart2, uartRxData, sizeof(uartRxData));
   User_Shell_Init();
 
   /* USER CODE END 2 */

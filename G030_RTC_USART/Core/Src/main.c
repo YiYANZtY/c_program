@@ -125,7 +125,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    shellTask(&shell);
+//    shellTask(&shell);
+	  printf("hello.");
 //    HAL_UART_Transmit(&huart1, "1\r\n", 2, 200);
     /* USER CODE END WHILE */
 
