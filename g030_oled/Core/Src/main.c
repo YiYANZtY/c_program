@@ -22,6 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "u8g2.h"
+#include "u8g2_port.h"
 
 /* USER CODE END Includes */
 
@@ -43,6 +45,8 @@
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
+u8g2_t u8g2;
+int t = 0;
 
 /* USER CODE END PV */
 
@@ -89,6 +93,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  u8g2_Setup_ssd1309_i2c_128x64_noname2_f(&u8g2, U8G2_R0, u8x8_byte_hw_i2c, u8x8_gpio_and_delay_stm32);
+  u8g2_InitDisplay(&u8g2);
+  u8g2_SetPowerSave(&u8g2, 0);
 
   /* USER CODE END 2 */
 
@@ -96,6 +103,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    HAL_Delay(100);
+    u8g2_ClearBuffer(&u8g2);
+    if (++t >= 32)
+      t = 1;
+    u8g2_DrawCircle(&u8g2, 64, 32, t, U8G2_DRAW_ALL);
+    u8g2_DrawCircle(&u8g2, 32, 32, t, U8G2_DRAW_ALL);
+    u8g2_DrawCircle(&u8g2, 96, 32, t, U8G2_DRAW_ALL);
+    u8g2_SendBuffer(&u8g2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
