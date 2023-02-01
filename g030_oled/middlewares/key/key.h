@@ -7,6 +7,13 @@ extern "C" {
 #endif
 #include <stdbool.h>
 
+#define KEY_C1_Pin GPIO_PIN_15
+#define KEY_C1_GPIO_Port GPIOB
+#define KEY_C2_Pin GPIO_PIN_1
+#define KEY_C2_GPIO_Port GPIOF
+#define KEY_C3_Pin GPIO_PIN_13
+#define KEY_C3_GPIO_Port GPIOB
+
 //#include "gpio.h"// FIXME
 #include "../utils.h"
 

@@ -1,2 +1,5 @@
 /g030_oled/Debug
 /g030_oled/g030_oled Debug.launch
+g030_oled/STM32G030C8TX_FLASH.ld
+/g030_oled/.settings
+/g030_oled/STM32G030C8TX_FLASH.ld
