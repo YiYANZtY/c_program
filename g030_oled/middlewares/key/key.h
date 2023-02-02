@@ -14,7 +14,7 @@ extern "C" {
 #define KEY_C3_Pin GPIO_PIN_13
 #define KEY_C3_GPIO_Port GPIOB
 
-//#include "gpio.h"// FIXME
+//#include "gpio.h"
 #include "../utils.h"
 
 typedef enum {

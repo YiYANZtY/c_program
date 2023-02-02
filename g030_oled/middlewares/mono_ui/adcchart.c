@@ -72,8 +72,8 @@ void adcchart_drawborder(adc_chart_t* p)
 
 float adcchart_get_new_value(adc_chart_t* p)
 {
-//    HAL_ADC_Start(&hadc1);
-//    return (float)abs(HAL_ADC_GetValue(&hadc1) - 3700) / 10 + 30;
+    HAL_ADC_Start(&hadc1);
+    return (float)abs(HAL_ADC_GetValue(&hadc1) - 3700) / 10 + 30;
 }
 
 void adcchart_callback_default_painter(adc_chart_t* p)

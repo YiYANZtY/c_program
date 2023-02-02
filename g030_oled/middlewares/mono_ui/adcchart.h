@@ -2,7 +2,9 @@
 #define __ADCCHART_H__
 
 #include "base.h"
-//#include "adc.h"// FIXME
+//#include "adc.h"
+extern ADC_HandleTypeDef hadc1;
+
 
 typedef struct {
     bool bRepaint;
